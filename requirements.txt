@@ -1,0 +1,7 @@
+matplotlib
+nptyping
+numpy
+rich
+scikit-learn
+scikit-learn-extra
+statsmodels
