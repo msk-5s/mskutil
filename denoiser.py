@@ -252,16 +252,16 @@ def run_rpca(data: NDArray[Shape["*,*"], Float], **kwargs: Mapping[str, Any]) ->
     data : numpy.ndarray, (n_timestep, n_series)
         The data to denoise.
     kwargs : dict of {str: any}
-        delta : optional of float, default=10e-7
+        delta : float, default=10e-7
             This coefficient is multiplied by the Frobenius norm of the `data` to give the minimum
             error for convergence. The default value may be too high depending on the `data`. The
             default value is based on the paper.
-        lmbda : optional of float, default=1 / np.sqrt(np.max(data.shape))
+        lmbda : float, default=1 / np.sqrt(np.max(data.shape))
             The tunable parameter in the rPCA optimization problem. The default value is
             recommended. The default value is based on the paper.
-        max_iterations : optional of int, default=1000
+        max_iterations : int, default=1000
             The maximum number of iterations to run PCP for.
-        mu : optional of float, default=data.size / (4 * np.linalg.norm(data, ord=1))
+        mu : float, default=data.size / (4 * np.linalg.norm(data, ord=1))
             A tunable parameter in the PCP algorithm. The default value is recommended. The default
             value is based on the paper.
 
