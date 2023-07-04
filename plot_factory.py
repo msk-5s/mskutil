@@ -20,14 +20,16 @@ def make_autocorrelation_plot(
 ) -> Tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     # pylint: disable=too-many-locals
     """
-    Make a heatmap of the correlations between loads.
+    Make a plot of the autocorrelation function (ACF) of a time series.
 
     Parameters
     ----------
     series : numpy.ndarray, (n_timestep,)
         The series to use.
-    linewidth : float, default=1.0
-        The width of the periodogram plot line.
+    linewidth : float, default=5.0
+        The width of the ACF plot line.
+    markersize : float, default=10.0
+        The size of each ACF marker.
     n_lag : optional of int, default=None
         The number of lags to use.
 
@@ -198,7 +200,7 @@ def make_scatter_dr_plot(
 ) -> Tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     # pylint: disable=too-many-locals
     """
-    Make a 2-D/3-D scatter plot of the first two components of some dimensionality reduction
+    Make a 2-D/3-D scatter plot of the first two/three components of some dimensionality reduction
     technique.
 
     Parameters
