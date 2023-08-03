@@ -86,10 +86,9 @@ def inject_cauchy(
         base_kv_partials : numpy.ndarray of float, (n_meters,)
             The partial base KV for each meter. This should be a percentage of the original base kv.
         channel_map : dict of {str: list of int}
-            The list of channel indices for each meter. These mappings are used to aggregate
-            multiple meter channels. Each item in the mapping will be
-            {meter_name: list of channel indices}, where the indices are the columns in the returned
-            data.
+            The list of channel indices for each meter. These mappings are used to fuse multiple
+            meter channels. Each item in the mapping will be {meter_name: list of channel indices},
+            where the indices are the columns in the returned data.
         percent : float
             The probability of observing the max magnitude via Cauchy distribution.
 
@@ -263,10 +262,9 @@ def inject_mixed(
         base_kv_partials : numpy.ndarray of float, (n_meters,)
             The partial base KV for each meter. This should be a percentage of the original base kv.
         channel_map : dict of {str: list of int}
-            The list of channel indices for each meter. These mappings are used to aggregate
-            multiple meter channels. Each item in the mapping will be
-            {meter_name: list of channel indices}, where the indices are the columns in the returned
-            data.
+            The list of channel indices for each meter. These mappings are used to fuse multiple
+            meter channels. Each item in the mapping will be {meter_name: list of channel indices},
+            where the indices are the columns in the returned data.
         percent_cauchy : float
             The probability of observing the max magnitude via Cauchy distribution.
         percent_gauss : float
