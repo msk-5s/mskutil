@@ -12,6 +12,7 @@ def function(
 from typing import Any, Dict, Callable, Mapping, NamedTuple
 from nptyping import Float, NDArray, Shape
 
+import numpy as np
 import sklearn.decomposition
 import sklearn.manifold
 
@@ -55,10 +56,11 @@ def make_valid_reducers() -> Dict[
         A new dictionary of valid reducers as defined in this module.
     """
     valid_reducers = {
-        "none": run_none,
-        "nmf": run_nmf,
-        "pca": run_pca,
         "le": run_le,
+        "nmf": run_nmf,
+        "none": run_none,
+        "pca": run_pca,
+        "svd": run_svd,
         "tsne": run_tsne
     }
 
@@ -88,6 +90,34 @@ def run_none(
         The result of the reducer.
     """
     result = Result(data=data)
+
+    return result
+
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+def run_le(
+    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+) -> Result:
+    """
+    Use laplacian eigenmaps (spectral embedding) to reduce the dimensionality of the data.
+
+    Parameters
+    ----------
+    data : numpy.ndarray, (n_series, n_timestep)
+        The data to reduce.
+    random_state : int
+        The state to use for rng.
+    kwargs : dict of {str: any}
+        See scikit-learn's documentation for `SpectralEmbedding`.
+
+    Returns
+    -------
+    Result
+        The result of the reducer.
+    """
+    reducer = sklearn.manifold.SpectralEmbedding(random_state=random_state, **kwargs).fit(data)
+
+    result = Result(data=reducer.embedding_)
 
     return result
 
@@ -153,11 +183,12 @@ def run_pca(
 
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
-def run_le(
+def run_svd(
     data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
 ) -> Result:
+    # pylint: disable=unused-argument
     """
-    Use laplacian eigenmaps (spectral embedding) to reduce the dimensionality of the data.
+    Use Singular Value Decomposition (SVD) to reduce the dimensionality of the data.
 
     Parameters
     ----------
@@ -166,16 +197,47 @@ def run_le(
     random_state : int
         The state to use for rng.
     kwargs : dict of {str: any}
-        See scikit-learn's documentation for `SpectralEmbedding`.
+        n_components : optional of int, default=None
+            The number of dimensions in the output. If `None` is passed, then the Singular Value
+            Hard Threshold (SVHT) is used to determine the number of singular values, and thus the
+            number of dimensions.
 
     Returns
     -------
     Result
         The result of the reducer.
+        other : dict of {str: any}
+            axis : numpy.ndarray of float, (n_components, n_series)
+                The right singular vectors.
+            values : numpy.ndarray of float, (n_series,)
+                The singular values of the data.
+            value_count : int
+                The number of singular values kept.
     """
-    reducer = sklearn.manifold.SpectralEmbedding(random_state=random_state, **kwargs).fit(data)
+    value_count = kwargs.get("n_component", None)
 
-    result = Result(data=reducer.embedding_)
+    # pylint: disable=invalid-name
+    (u, s, vt) = np.linalg.svd(data, full_matrices=False)
+
+    if value_count is None:
+        # Calculate the Singular Value Hard Threshold (SVHT) as presented in "The Optimal Hard
+        # Threshold for Singular Values is 4 / sqrt(3)" by Gavish, et al.
+        beta = (data.shape[0] / data.shape[1]) if (data.shape[0] < data.shape[1]) else \
+               (data.shape[1] / data.shape[0])
+
+        omega = 0.56 * beta**3 - 0.95 * beta**2 + 1.82 * beta + 1.43
+        threshold = omega * np.median(s)
+
+        value_count = len(s[s >= threshold])
+        value_count = value_count if value_count > 0 else 1
+
+    data_dr = u[:, :value_count]
+
+    result = Result(
+        data=data_dr, other={"axis": vt[:value_count, :], "values": s, "value_count": value_count},
+        other_to_metadata=lambda other: {"values": other["values"],
+        "value_count": other["value_count"]}
+    )
 
     return result
 
