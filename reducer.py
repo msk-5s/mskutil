@@ -5,11 +5,11 @@ This module contains functions for dimensionality reduction.
 
 Functions in the module must adhere to the following signature:
 def function(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int], **kwargs: Mapping[str, Any]
 ) -> reducer.Result
 """
 
-from typing import Any, Dict, Callable, Mapping, NamedTuple
+from typing import Any, Dict, Callable, Mapping, NamedTuple, Optional
 from nptyping import Float, NDArray, Shape
 
 import numpy as np
@@ -42,7 +42,7 @@ class Result(NamedTuple):
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def make_valid_reducers() -> Dict[
-    str, Callable[[NDArray[Shape["*,*"], Float], int, Mapping[str, Any]], Result]
+    str, Callable[[NDArray[Shape["*,*"], Float], Optional[int], Mapping[str, Any]], Result]
 ]:
     """
     Make a dictionary of valid reducers that are in this module.
@@ -69,7 +69,8 @@ def make_valid_reducers() -> Dict[
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def run_none(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int] = None,
+    **kwargs: Mapping[str, Any]
 ) -> Result:
     # pylint: disable=unused-argument
     """
@@ -79,7 +80,7 @@ def run_none(
     ----------
     data : numpy.ndarray, (n_series, n_timestep)
         The data to reduce.
-    random_state : int
+    random_state : optional of int, default=None
         The state to use for rng.
     kwargs : dict of {str: any}
         Not used.
@@ -96,7 +97,8 @@ def run_none(
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def run_le(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int] = None,
+    **kwargs: Mapping[str, Any]
 ) -> Result:
     """
     Use laplacian eigenmaps (spectral embedding) to reduce the dimensionality of the data.
@@ -105,7 +107,7 @@ def run_le(
     ----------
     data : numpy.ndarray, (n_series, n_timestep)
         The data to reduce.
-    random_state : int
+    random_state : optional of int, default=None
         The state to use for rng.
     kwargs : dict of {str: any}
         See scikit-learn's documentation for `SpectralEmbedding`.
@@ -124,7 +126,8 @@ def run_le(
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def run_nmf(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int] = None,
+    **kwargs: Mapping[str, Any]
 ) -> Result:
     """
     Use Non-Negative Matrix Factorization (NMF) to reduce the dimensionality of the `data`.
@@ -133,7 +136,7 @@ def run_nmf(
     ----------
     data : numpy.ndarray, (n_series, n_timestep)
         The data to reduce.
-    random_state : int
+    random_state : optional of int, default=None
         The state to use for rng.
     kwargs : dict of {str: any}
         See scikit-learn's documentation for `NMF`.
@@ -156,7 +159,8 @@ def run_nmf(
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def run_pca(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int] = None,
+    **kwargs: Mapping[str, Any]
 ) -> Result:
     """
     Use Principal Component Analysis (PCA) to reduce the dimensionality of the `data`.
@@ -165,7 +169,7 @@ def run_pca(
     ----------
     data : numpy.ndarray, (n_series, n_timestep)
         The data to reduce.
-    random_state : int
+    random_state : optional of int, default=None
         The state to use for rng.
     kwargs : dict of {str: any}
         See scikit-learn's documentation for `PCA`.
@@ -184,7 +188,8 @@ def run_pca(
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def run_svd(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int] = None,
+    **kwargs: Mapping[str, Any]
 ) -> Result:
     # pylint: disable=unused-argument
     """
@@ -194,7 +199,7 @@ def run_svd(
     ----------
     data : numpy.ndarray, (n_series, n_timestep)
         The data to reduce.
-    random_state : int
+    random_state : optional of int, default=None
         The state to use for rng.
     kwargs : dict of {str: any}
         n_components : optional of int, default=None
@@ -214,7 +219,7 @@ def run_svd(
             value_count : int
                 The number of singular values kept.
     """
-    value_count = kwargs.get("n_component", None)
+    value_count = kwargs.get("n_components", None)
 
     # pylint: disable=invalid-name
     (u, s, vt) = np.linalg.svd(data, full_matrices=False)
@@ -246,7 +251,8 @@ def run_svd(
 #---------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 def run_tsne(
-    data: NDArray[Shape["*,*"], Float], random_state: int, **kwargs: Mapping[str, Any]
+    data: NDArray[Shape["*,*"], Float], random_state: Optional[int] = None,
+    **kwargs: Mapping[str, Any]
 ) -> Result:
     """
     Use T-distributed Stochastic Neighbor Embedding (T-SNE) to reduce the dimensionality of the
@@ -256,7 +262,7 @@ def run_tsne(
     ----------
     data : numpy.ndarray, (n_series, n_timestep)
         The data to reduce.
-    random_state : int
+    random_state : optional of int, default=None
         The state to use for rng.
     kwargs : dict of {str: any}
         See scikit-learn's documentation for `TSNE`.
