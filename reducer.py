@@ -240,7 +240,7 @@ def run_svd(
 
     result = Result(
         data=data_dr, other={
-            "axis": vt[:value_count, :].T, "values": s, "value_count": value_count
+            "axis": vt[:value_count, :].T, "values": s[:value_count], "value_count": value_count
         },
         other_to_metadata=lambda other: {"values": other["values"],
         "value_count": other["value_count"]}
