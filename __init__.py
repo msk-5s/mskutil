@@ -8,3 +8,4 @@ from . import noise_injector
 from . import plot_factory
 from . import reducer
 from . import scaler
+from . import window_generator_factory
