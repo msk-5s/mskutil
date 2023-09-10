@@ -59,7 +59,7 @@ def make_bootstrap_replacement_generator(
     rng = np.random.default_rng(seed=random_state)
 
     start_indices = list(np.arange(
-        start=0, stop=data.shape[0] - (width + stride), step=width + stride
+        start=0, stop=data.shape[0] - width, step=stride
     ))
 
     def generator():
@@ -105,7 +105,7 @@ def make_bootstrap_no_replacement_generator(
     rng = np.random.default_rng(seed=random_state)
 
     start_indices = list(np.arange(
-        start=0, stop=data.shape[0] - width, step=width + stride
+        start=0, stop=data.shape[0] - width, step=stride
     ))
 
     def generator():
