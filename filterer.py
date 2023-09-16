@@ -216,17 +216,14 @@ def run_unit_magnitude(
     will_zero_first = kwargs.get("will_zero_first", True)
 
     filtered_data = np.zeros(shape=data.shape)
+    data_unit = np.zeros(shape=data.shape, dtype=complex)
 
-    for (i, series) in enumerate(data.T):
-        dft_series = np.fft.fft(series)
+    data_dft = np.fft.fft(data, axis=0)
+    data_dft_angles = np.arctan(data_dft.imag / data_dft.real)
+    data_unit.real = np.cos(data_dft_angles)
+    data_unit.imag = np.sin(data_dft_angles)
 
-        angles = np.arctan(dft_series.imag / dft_series.real)
-
-        unit_series = np.zeros(shape=dft_series.shape, dtype=complex)
-        unit_series.real = np.cos(angles)
-        unit_series.imag = np.sin(angles)
-
-        filtered_data[:, i] = np.fft.ifft(unit_series).real
+    filtered_data = np.fft.ifft(data_unit, axis=0).real
 
     if will_zero_first:
         filtered_data[0, :] = 0
